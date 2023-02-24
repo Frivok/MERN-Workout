@@ -8,6 +8,7 @@ const app = express();
 
 app.use(express.json());
 
+mongoose.set('strictQuery', false)
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
         app.listen(process.env.PORT, () => {

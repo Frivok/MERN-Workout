@@ -46,7 +46,7 @@ const createWorkout = async (req, res) => {
         workout.save();
     }
     catch (err) {
-        res.status(400).json({msg: err.message});
+        res.status(400).json({error: err.message});
     }
 }
 

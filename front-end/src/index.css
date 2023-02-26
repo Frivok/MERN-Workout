@@ -30,9 +30,6 @@ h1 {
 }
 
 header .container {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 1.5em;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,11 +62,12 @@ header .container {
   margin: 20px auto;
   padding: 20px;
   position: relative;
-  background-color: rgba(30,30,30,255)
+  background-color: rgba(30,30,30,255);
 }
 
 .workout-details h2 {
   margin: 0;
+  color: #535bf2;
   font-size: 1.2em;
 }
 
@@ -78,7 +76,11 @@ header .container {
   font-size: 0.9em;
 }
 
-.workout-form input {
+.workout-form h2 {
+  color: #535bf2;
+}
+
+.workout-form input{
   display: block;
   width: 100%;
   padding: 10px;
@@ -100,6 +102,25 @@ header .container {
 
 button:hover {
   border-color: #646cff;
+}
+
+#delete-btn {
+  display: flex;
+  margin-left: auto;
+}
+
+p.error {
+  display: block;
+  border: 1px solid #535bf2;
+  color: #535bf2;
+  border-radius: 4px;
+  width: 100%;
+  background-color: rgba(30,30,30,255);
+  padding: 10px;
+}
+
+input.error {
+  border: 1px solid #535bf2;
 }
 
 button:focus,

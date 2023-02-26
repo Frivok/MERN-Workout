@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useWorkoutContext } from "../hooks/useWorkoutContext";
 
 // components 
 import WorkoutDetails from "../components/WorkoutDetails";
@@ -6,22 +7,18 @@ import WorkoutForm from "../components/WorkoutForm";
 
 const Home = () => {
 
-    // create a state to store the workouts
-    const [workouts, setWorkouts] = useState([]);
-    
-    // fire off a function once (once is defined by the brackets) when the component loads
+    const { workouts, dispatch } = useWorkoutContext();
+
     useEffect(() => {
         const fetchWorkouts = async () => {
         const response = await fetch('/api/workouts');
 
             if(response.ok) {
-            const data = await response.json();
-            setWorkouts(data);
+                dispatch({type: 'SET_WORKOUTS', payload: await response.json()});
             }
         };
 
         fetchWorkouts();
-
     }, []);
 
     return (
@@ -29,8 +26,9 @@ const Home = () => {
             <div className="workouts">
                 {/*map over the workouts array and for each workout, return a paragraph with the title*/}
                 {workouts.map((workout) => (
-                    <WorkoutDetails key={workout._id} workout={workout} />
-                ))}
+                        <WorkoutDetails key={workout._id} workout={workout} />
+                    ))
+                }
             </div>
             <WorkoutForm />
         </div>

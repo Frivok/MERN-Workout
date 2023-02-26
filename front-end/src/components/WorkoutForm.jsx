@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
+import { useWorkoutContext } from '../hooks/useWorkoutContext';
+
+const emptyWorkout = {
+    title: '',
+    repetitions: '',
+    sets: '',
+    weight: '',
+}
 
 const WorkoutForm = () => {
 
-    const [title, setTitle] = useState('');
-    const [repetitions, setRepetitions] = useState('');
-    const [sets, setSets] = useState('');
-    const [weight, setWeight] = useState('');
+    const { dispatch } = useWorkoutContext();
+
+    const [workout, setWorkout] = useState(emptyWorkout);
     const [error, setError] = useState(null);
+    const [emptyFields, setEmptyFields] = useState([]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        const workout = {title, repetitions, sets, weight};
 
         const response = await fetch('/api/workouts', {
             method: 'POST',
@@ -24,32 +30,60 @@ const WorkoutForm = () => {
 
         if(!response.ok) {
             setError(json.error);
+            setEmptyFields(json.emptyFields);
         }
 
         if(response.ok) {
-            setTitle('');
-            setRepetitions('');
-            setSets('');
-            setWeight('');
+            setWorkout(emptyWorkout)
             setError(null);
             console.log('new workout added', json);
+            dispatch({type: 'ADD_WORKOUT', payload: json});
         }
     }
+
+    const onChange = (event) => setWorkout(workoutCurrentState => {
+        //make a copy of the current state
+        let updated = {...workoutCurrentState};
+        //update the copy with the new value
+        updated[event.target.name] = event.target.value; 
+        //why do we return the copy and not the original state?
+        //because we want to return a new object, not mutate the original state
+        return updated;
+    })
 
     return (
         <form className="workout-form" onSubmit={handleSubmit}>
             <h2>Add a new workout</h2>
             <label>Workout title:</label>
-            <input type="text" onChange={(event) => setTitle(event.target.value)} value={title}></input>
+            <input name="title"
+            className={emptyFields.includes('title') ? 'error' : ''} 
+            type="text" onChange={onChange} 
+            value={workout.title}>
+            </input>
 
             <label>Weight (in kilos):</label>
-            <input type="number" onChange={(event) => setWeight(event.target.value)} value={weight}></input>
+            <input name="weight"
+            className={emptyFields.includes('weight') ? 'error' : ''}
+            type="number" 
+            onChange={onChange} 
+            value={workout.weight}>
+            </input>
 
             <label>Number of repetitions:</label>
-            <input type="text" onChange={(event) => setRepetitions(event.target.value)} value={repetitions}></input>
+            <input name="repetitions"
+            className={emptyFields.includes('repetitions') ? 'error' : ''}
+            type="text"
+            onChange={onChange} 
+            value={workout.repetitions}>
+            </input>
 
             <label>Number of sets:</label>
-            <input type="text" onChange={(event) => setSets(event.target.value)} value={sets}></input>
+            <input name="sets"
+            className={emptyFields.includes('sets') ? 'error' : ''}
+            type="text"
+            onChange={onChange}
+            value={workout.sets}>
+            </input>
 
             <button>Add workout</button>
             {error && <p className="error">{error}</p>}

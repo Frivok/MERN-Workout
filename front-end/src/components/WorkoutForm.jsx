@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useWorkoutContext } from '../hooks/useWorkoutContext';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const emptyWorkout = {
     title: '',
@@ -11,6 +12,7 @@ const emptyWorkout = {
 const WorkoutForm = () => {
 
     const { dispatch } = useWorkoutContext();
+    const { user } = useAuthContext();
 
     const [workout, setWorkout] = useState(emptyWorkout);
     const [error, setError] = useState(null);
@@ -19,25 +21,32 @@ const WorkoutForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        if (!user) {
+            setError('You must be logged in to add a workout');
+            return;
+        }
+
         const response = await fetch('/api/workouts', {
             method: 'POST',
             body: JSON.stringify(workout),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
             }
         });
-        const json = await response.json();
+        const data = await response.json();
 
         if(!response.ok) {
-            setError(json.error);
-            setEmptyFields(json.emptyFields);
+            setError(data.error);
+            setEmptyFields(data.emptyFields);
         }
 
         if(response.ok) {
             setWorkout(emptyWorkout)
             setError(null);
-            console.log('new workout added', json);
-            dispatch({type: 'ADD_WORKOUT', payload: json});
+            console.log('new workout added', data);
+            setEmptyFields([]);
+            dispatch({type: 'ADD_WORKOUT', payload: data});
         }
     }
 
@@ -56,6 +65,7 @@ const WorkoutForm = () => {
             <h2>Add a new workout</h2>
             <label>Workout title:</label>
             <input name="title"
+            //if the title is in the emptyFields array, add the class 'error'
             className={emptyFields.includes('title') ? 'error' : ''} 
             type="text" onChange={onChange} 
             value={workout.title}>

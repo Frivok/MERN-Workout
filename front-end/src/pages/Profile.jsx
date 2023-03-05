@@ -2,7 +2,7 @@ import {useEffect} from "react";
 import {useWorkoutContext} from "../hooks/useWorkoutContext";
 import {useAuthContext} from "../hooks/useAuthContext";
 
-// components 
+// components
 import WorkoutDetails from "../components/WorkoutDetails";
 import WorkoutForm from "../components/WorkoutForm";
 import ImageUpload from "../components/ImageUpload";
@@ -15,7 +15,7 @@ const Home = () => {
   useEffect(() => {
 
     const fetchWorkouts = async () => {
-      const response = await fetch('/api/workouts', {
+      const response = await fetch('/api/workouts/profile', {
         headers: {
           'Authorization': "Bearer " + user.token,
         }
@@ -42,10 +42,9 @@ const Home = () => {
           {/*map over the workouts array and for each workout, return a paragraph with the title*/}
           {workouts && workouts.map((workout) => (
             <WorkoutDetails key={workout._id} workout={workout}/>
-          ))
-          }
+          ))}
         </div>
-        <WorkoutForm/>
+        <ImageUpload/>
       </div>
     </>
   );
